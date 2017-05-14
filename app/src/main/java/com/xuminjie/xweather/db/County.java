@@ -1,4 +1,4 @@
-package db;
+package com.xuminjie.xweather.db;
 
 
 import org.litepal.crud.DataSupport;

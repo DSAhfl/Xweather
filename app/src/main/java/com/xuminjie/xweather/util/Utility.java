@@ -1,14 +1,15 @@
-package util;
+package com.xuminjie.xweather.util;
 
 import android.text.TextUtils;
 
-import com.xuminjie.weather.db.City;
-import com.xuminjie.weather.db.County;
-import com.xuminjie.weather.db.Province;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.xuminjie.xweather.db.City;
+import com.xuminjie.xweather.db.County;
+import com.xuminjie.xweather.db.Province;
 
 /**
  * Created by Administrator on 2017/5/10.

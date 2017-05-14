@@ -1,4 +1,4 @@
-package util;
+package com.xuminjie.xweather.util;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
