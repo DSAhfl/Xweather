@@ -3,8 +3,8 @@
     <dbname value="weather"/>
     <version value="1"/>
     <list>
-        <mapping class="com.xuminjie.weather.com.xuminjie.xweather.db.City"/>
-        <mapping class="com.xuminjie.weather.com.xuminjie.xweather.db.County"/>
-        <mapping class="com.xuminjie.weather.com.xuminjie.xweather.db.Province"/>
+        <mapping class="com.xuminjie.xweather.db.City"/>
+        <mapping class="com.xuminjie.xweather.db.County"/>
+        <mapping class="com.xuminjie.xweather.db.Province"/>
     </list>
 </litepal>

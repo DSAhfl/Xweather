@@ -8,6 +8,12 @@
     android:orientation="vertical"
     tools:context="com.xuminjie.xweather.MainActivity">
 
+    <!--<ImageView-->
+        <!--android:id="@+id/bing_pic_img"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:scaleType="centerCrop"/>-->
+
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -24,6 +30,7 @@
         android:layout_gravity="bottom"
         android:background="#000"
         app:itemTextColor="#fff"
+        app:itemIconTint="#fff"
         app:menu="@menu/navigation" />
 
 </LinearLayout>

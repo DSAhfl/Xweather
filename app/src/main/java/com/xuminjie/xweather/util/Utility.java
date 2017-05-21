@@ -7,9 +7,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.Gson;
 import com.xuminjie.xweather.db.City;
 import com.xuminjie.xweather.db.County;
 import com.xuminjie.xweather.db.Province;
+import com.xuminjie.xweather.gson.Weather;
 
 /**
  * Created by Administrator on 2017/5/10.
@@ -48,7 +50,7 @@ public class Utility {
                     JSONObject cityObject = allProvince.getJSONObject(i);
                     City city = new City();
                     city.setCityName(cityObject.getString("name"));
-                    city.setCityCode(cityObject.getInt("idds"));
+                    city.setCityCode(cityObject.getInt("id"));
                     city.setProvinceId(provinceId);
                     city.save();
                 }
@@ -81,4 +83,20 @@ public class Utility {
         }
         return false;
     }
+
+    /**
+     * 将返回的JSON数据解析称weather实体类
+     */
+    public static Weather handleWeatherResponse(String response){
+        try{
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
