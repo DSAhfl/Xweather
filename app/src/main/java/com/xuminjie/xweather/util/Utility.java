@@ -14,6 +14,7 @@ import com.xuminjie.xweather.db.Province;
 import com.xuminjie.xweather.gson.Weather;
 
 /**
+ * 先使用JSONArray和JSONObject将数据解析出来，然后组装成实体类对象，再调用save()将数据存储到数据库中
  * Created by Administrator on 2017/5/10.
  */
 
@@ -85,7 +86,7 @@ public class Utility {
     }
 
     /**
-     * 将返回的JSON数据解析称weather实体类
+     * 将返回的JSON数据解析成weather实体类
      */
     public static Weather handleWeatherResponse(String response){
         try{

@@ -48,17 +48,17 @@ public class ChooseAreaFragment extends Fragment {
     private ListView listView;
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
-    //province list
+    //省份列表
     private List<Province> provinceList;
-    //city list
+    //城市列表
     private List<City> cityList;
-    //county list
+    //区列表
     private List<County> countyList;
-    //select province
+    //选中的省份
     private Province selectedProvince;
-    //select city
+    //选中的城市
     private City selectedCity;
-    //select level
+    //当前层次
     private int currentLevel;
 
     @Nullable
@@ -71,13 +71,13 @@ public class ChooseAreaFragment extends Fragment {
         adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_expandable_list_item_1,dataList);
         listView.setAdapter(adapter);
 
-
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //设置列表和返回按钮的监听器
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -89,11 +89,14 @@ public class ChooseAreaFragment extends Fragment {
                     queryCounties();
                 }else if (currentLevel == LEVEL_COUNTY){
                     String weatherId = countyList.get(position).getWeatherId();
-                    WeatherFragment weatherFragment = new WeatherFragment();
+                    WeatherFragment weatherFragment = (WeatherFragment) getParentFragment();//获得父碎片进行操作
                     getActivity().getIntent().putExtra("weather_id", weatherId);//传递数据
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content, weatherFragment);
-                    transaction.commit();
+                    weatherFragment.drawerLayout.closeDrawers();
+                    weatherFragment.swipeRefresh.setRefreshing(true);
+                    weatherFragment.requestWeather(weatherId);
+//                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//                    transaction.replace(R.id.content, weatherFragment);
+//                    transaction.commit();
                 }
             }
         });
@@ -105,11 +108,6 @@ public class ChooseAreaFragment extends Fragment {
                     queryCities();
                 }else if(currentLevel == LEVEL_CITY){
                     queryProvinces();
-                }else if(currentLevel == LEVEL_PROVINCE){
-                    WeatherFragment weatherFragment = new WeatherFragment();
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content, weatherFragment);
-                    transaction.commit();
                 }
             }
         });
@@ -120,10 +118,12 @@ public class ChooseAreaFragment extends Fragment {
      * 查询城市，优先从数据库中查询，如果没有再到服务器上去查询
      */
     private void queryProvinces() {
-        titleText.setText("中国");
-        provinceList = DataSupport.findAll(Province.class);
+        titleText.setText("中国");    //首先将头布局的标题设置成中国
+        provinceList = DataSupport.findAll(Province.class); //litepal中的类，从数据库中获取省份数据
+        backButton.setVisibility(View.GONE);    //将返回按钮隐藏
 //        Toast.makeText(getActivity(),provinceList.size(),Toast.LENGTH_SHORT).show();
         if(provinceList != null && provinceList.size() > 0) {
+            //如果数据库中有数据，则加入列表，通过adapter通知更新数据
             dataList.clear();
             for (Province province : provinceList) {
                 dataList.add(province.getProvinceName());
@@ -132,12 +132,14 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
         }else{
+            //如果数据库中没有数据，则从服务器获取
             String address = "http://guolin.tech/api/china";
             queryFromServer(address,"province");
         }
     }
 
     private void queryCities() {
+        backButton.setVisibility(View.VISIBLE);
         titleText.setText(selectedProvince.getProvinceName());
         cityList = DataSupport.where("provinceId = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if(cityList.size() > 0) {
@@ -157,6 +159,7 @@ public class ChooseAreaFragment extends Fragment {
     }
 
     private void queryCounties() {
+        backButton.setVisibility(View.VISIBLE);
         titleText.setText(selectedCity.getCityName());
         countyList = DataSupport.where("cityId = ?", String.valueOf(selectedCity.getId())).find(County.class);
         if(countyList.size() > 0) {
@@ -182,6 +185,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryFromServer(String address, final String type) {
         showProgressDialog();
+
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -194,7 +198,10 @@ public class ChooseAreaFragment extends Fragment {
                     }
                 });
             }
-
+            /*
+                向服务器发送请求，响应的数据会回调到onResponse方法中，然后调用Utility.handleProvinceResponse
+                方法来解析和处理服务器返回的数据，并存储到数据库中
+             */
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
@@ -207,6 +214,10 @@ public class ChooseAreaFragment extends Fragment {
                     result = Utility.handleCountyResponse(responseText, selectedCity.getId());
                 }
                 if(result){
+                    /*
+                        在解析和处理完以后再次调用查询方法加载数据，由于查询方法牵涉到UI操作，因此必须在主线程
+                        中调用
+                     */
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

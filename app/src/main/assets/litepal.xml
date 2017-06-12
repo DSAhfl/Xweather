@@ -7,4 +7,5 @@
         <mapping class="com.xuminjie.xweather.db.County"/>
         <mapping class="com.xuminjie.xweather.db.Province"/>
     </list>
+    <!--将数据库名指定为weather，版本指定为1，并将City，Province，County三个实体类添加到映射列表中-->
 </litepal>

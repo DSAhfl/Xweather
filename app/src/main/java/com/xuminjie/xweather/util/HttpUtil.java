@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 /**
+ * 发起一条HTTP请求只需调用该方法，传入请求地址，注册一个回调来处理服务器的响应
  * Created by Administrator on 2017/5/10.
  */
 
