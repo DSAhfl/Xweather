@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
+        Log.d("pathhhhh",getApplicationContext().getFilesDir().getAbsolutePath());
 //        getPermission();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);

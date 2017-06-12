@@ -21,22 +21,30 @@
         android:gravity="center"
         android:textColor="#fff"/>
 
+    <ImageView
+        android:src="@drawable/weatherimg"
+        android:id="@+id/weather_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center" />
+
     <TextView
-        android:id="@+id/max_text"
+        android:id="@+id/tmp_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:gravity="right"
         android:textColor="#fff"/>
 
-    <TextView
-        android:id="@+id/min_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:gravity="right"
-        android:textColor="#fff"/>
+    <!--<TextView-->
+        <!--android:id="@+id/min_text"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_weight="1"-->
+        <!--android:gravity="right"-->
+        <!--android:textColor="#fff"/>-->
 
 </LinearLayout>

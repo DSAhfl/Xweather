@@ -2,7 +2,10 @@ package com.xuminjie.xweather;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -223,12 +226,16 @@ public class WeatherFragment extends Fragment {
             View view = LayoutInflater.from(getContext()).inflate(R.layout.forecast_item, forecastLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.date_text);
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
-            TextView maxText = (TextView) view.findViewById(R.id.max_text);
-            TextView minText = (TextView) view.findViewById(R.id.min_text);
+//            TextView maxText = (TextView) view.findViewById(R.id.max_text);
+//            TextView minText = (TextView) view.findViewById(R.id.min_text);
+            TextView tmpText = (TextView) view.findViewById(R.id.tmp_text);
+            ImageView weatherImg = (ImageView) view.findViewById(R.id.weather_img);
             dateText.setText(forecast.date);
             infoText.setText(forecast.more.info);
-            maxText.setText(forecast.temperature.max);
-            minText.setText(forecast.temperature.min);
+            weatherImg.getDrawable().setLevel(forecast.more.code);//drawable里设置xml文件，选择对应的图片
+//            maxText.setText(forecast.temperature.max + "℃");
+//            minText.setText(forecast.temperature.min  "℃");
+            tmpText.setText(forecast.temperature.max + "℃" + " / " + forecast.temperature.min + "℃");
             forecastLayout.addView(view);
         }
         if(weather.aqi != null){

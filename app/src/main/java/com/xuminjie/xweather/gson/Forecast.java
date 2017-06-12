@@ -23,5 +23,8 @@ public class Forecast {
     public class More{
         @SerializedName("txt_d")
         public String info;
+
+        @SerializedName("code_d")
+        public int code;
     }
 }
