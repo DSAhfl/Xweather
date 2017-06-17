@@ -9,6 +9,8 @@ import com.google.gson.annotations.SerializedName;
 public class Forecast {
     public String date;
 
+    public String historyCity;
+
     @SerializedName("tmp")
     public Temperature temperature;
 

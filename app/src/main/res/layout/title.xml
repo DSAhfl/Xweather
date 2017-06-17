@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:textColor="#fff"
-        android:text="崂山"
+        android:text="青岛"
         android:textSize="20sp"/>
 
     <TextView
@@ -29,6 +29,6 @@
         android:layout_marginLeft="10dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:background="@drawable/home" />
+        android:background="@drawable/city" />
 
 </RelativeLayout>

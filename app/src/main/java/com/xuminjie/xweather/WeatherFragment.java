@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.Request;
 import com.xuminjie.xweather.gson.Forecast;
 import com.xuminjie.xweather.gson.Weather;
 import com.xuminjie.xweather.service.AutoUpdateService;
@@ -37,6 +38,9 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -100,26 +104,27 @@ public class WeatherFragment extends Fragment {
         String weatherId = null;
         weatherId = getActivity().getIntent().getStringExtra("weather_id");
         if(weatherId == null){
-            //无缓存时查询崂山天气
-            weatherId = "CN101120202";
+            //无缓存时查询青岛天气
+            weatherId = "CN101120201";
         }
         weatherLayout.setVisibility(View.INVISIBLE);
         requestWeather(weatherId);
-        titleCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ChooseAreaFragment chooseAreaFragment = new ChooseAreaFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.content, chooseAreaFragment);
-                transaction.commit();
-            }
-        });
+//        requestServer();
+//        titleCity.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ChooseAreaFragment chooseAreaFragment = new ChooseAreaFragment();
+//                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//                transaction.replace(R.id.content, chooseAreaFragment);
+//                transaction.commit();
+//            }
+//        });
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 if(getActivity().getIntent().getStringExtra("weather_id") == null){
-                    requestWeather("CN101120202");
+                    requestWeather("CN101120201");
                 }else{
                     requestWeather(getActivity().getIntent().getStringExtra("weather_id"));
                 }
@@ -134,6 +139,33 @@ public class WeatherFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void requestServer() {
+        String Url = "http://10.25.109.37:8080/Xweather/SaveDataServlet";
+        HttpUtil.sendOkHttpRequest(Url, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                getActivity().runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(),"连接服务器失败",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("server",response.body().string());
+                getActivity().runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(),"连接服务器成功",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     /*
@@ -200,6 +232,7 @@ public class WeatherFragment extends Fragment {
                             editor.putString("weather", responseText);
                             editor.apply();
                             showWeatherInfo(weather);
+                            save2ServerDB(weather);
                             Intent intent = new Intent(getContext(), AutoUpdateService.class);
                             getActivity().startService(intent);
                         }else{
@@ -210,6 +243,38 @@ public class WeatherFragment extends Fragment {
                 });
             }
         });
+    }
+
+    private void save2ServerDB(final Weather weather) {
+        Log.d("saveRes","inFun");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.d("saveRes","inRun");
+                    //10.25.109.37
+                    String serverUrl = "http://10.6.22.233:8080/Xweather/SaveDataServlet";
+                    OkHttpClient client = new OkHttpClient();
+                    Forecast forecast = weather.forecastList.get(0);
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("date",forecast.date)
+                            .add("maxTmp",forecast.temperature.max)
+                            .add("minTmp",forecast.temperature.min)
+                            .add("txt",forecast.more.info)
+                            .add("weatherId",weather.basic.weatherId)
+                            .add("code",""+forecast.more.code)
+                            .add("city",weather.basic.cityName).build();
+                    okhttp3.Request request = new okhttp3.Request.Builder().url(serverUrl).post(requestBody).build();
+                    Response response = client.newCall(request).execute();
+                    String responseData = response.body().string();
+                    Log.d("saveRes",responseData);
+                    Toast.makeText(getActivity(), responseData, Toast.LENGTH_SHORT).show();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     private void showWeatherInfo(Weather weather) {
